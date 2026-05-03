@@ -8,13 +8,10 @@ const Home = () => {
   const { user } = useAuth();
   const [selectedUser, setSelectedUser] = useState(null);
 
-  // Connect to Socket.io when home page loads
   useEffect(() => {
     socket.connect();
-    socket.emit("addUser", user._id); // Tell server "I'm online"
-
+    socket.emit("addUser", user._id);
     return () => {
-      // Cleanup when component unmounts
       socket.disconnect();
     };
   }, [user._id]);

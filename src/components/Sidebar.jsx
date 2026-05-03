@@ -13,9 +13,12 @@ const Sidebar = ({ selectedUser, onSelectUser }) => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/auth/users", {
-          headers: { Authorization: `Bearer ${user.token}` },
-        });
+        const res = await axios.get(
+          "https://real-time-mern-chat-app-server.onrender.com/api/auth/users",
+          {
+            headers: { Authorization: `Bearer ${user.token}` },
+          },
+        );
         setUsers(res.data);
       } catch (err) {
         console.error("Failed to fetch users", err);

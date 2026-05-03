@@ -71,7 +71,7 @@ const ChatWindow = ({ selectedUser }) => {
     try {
       // 1. Save message to database via REST API
       const res = await axios.post(
-        `http://localhost:5000/api/messages/send/${selectedUser._id}`,
+        `https://real-time-mern-chat-app-server.onrender.com/api/messages/send/${selectedUser._id}`,
         { message: messageText },
         { headers: { Authorization: `Bearer ${user.token}` } },
       );
