@@ -1,51 +1,63 @@
-import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
-import { useAuth } from '../context/AuthContext';
-import socket from '../utils/socket';
-import MessageBubble from './MessageBubble';
+import React, { useState, useEffect, useRef } from "react";
+import axios from "axios";
+import { useAuth } from "../context/AuthContext";
+import socket from "../utils/socket";
+import MessageBubble from "./MessageBubble";
 
 const ChatWindow = ({ selectedUser }) => {
   const { user } = useAuth();
   const [messages, setMessages] = useState([]);
-  const [newMsg, setNewMsg]     = useState('');
-  const [loading, setLoading]   = useState(false);
+  const [newMsg, setNewMsg] = useState("");
+  const [loading, setLoading] = useState(false);
   const endRef = useRef(null);
 
-  useEffect(() => { endRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   useEffect(() => {
     if (!selectedUser) return;
     setLoading(true);
-    axios.get(`http://localhost:5000/api/messages/${selectedUser._id}`, {
-      headers: { Authorization: `Bearer ${user.token}` },
-    }).then(res => setMessages(res.data)).catch(console.error).finally(() => setLoading(false));
+    axios
+      .get(
+        `https://real-time-mern-chat-app-server.onrender.com/api/messages/${selectedUser._id}`,
+        {
+          headers: { Authorization: `Bearer ${user.token}` },
+        },
+      )
+      .then((res) => setMessages(res.data))
+      .catch(console.error)
+      .finally(() => setLoading(false));
   }, [selectedUser, user.token]);
 
   useEffect(() => {
-    socket.on('receiveMessage', (msg) => {
+    socket.on("receiveMessage", (msg) => {
       if (msg.senderId === selectedUser?._id) {
-        setMessages(prev => [...prev, {
-          sender: msg.senderId,
-          message: msg.message,
-          createdAt: msg.createdAt,
-        }]);
+        setMessages((prev) => [
+          ...prev,
+          {
+            sender: msg.senderId,
+            message: msg.message,
+            createdAt: msg.createdAt,
+          },
+        ]);
       }
     });
-    return () => socket.off('receiveMessage');
+    return () => socket.off("receiveMessage");
   }, [selectedUser]);
 
   const handleSend = async () => {
     if (!newMsg.trim() || !selectedUser) return;
     const text = newMsg;
-    setNewMsg('');
+    setNewMsg("");
     try {
       const res = await axios.post(
-        `http://localhost:5000/api/messages/send/${selectedUser._id}`,
+        `https://real-time-mern-chat-app-server.onrender.com/api/messages/send/${selectedUser._id}`,
         { message: text },
-        { headers: { Authorization: `Bearer ${user.token}` } }
+        { headers: { Authorization: `Bearer ${user.token}` } },
       );
-      setMessages(prev => [...prev, res.data]);
-      socket.emit('sendMessage', {
+      setMessages((prev) => [...prev, res.data]);
+      socket.emit("sendMessage", {
         senderId: user._id,
         receiverId: selectedUser._id,
         message: text,
@@ -80,7 +92,13 @@ const ChatWindow = ({ selectedUser }) => {
 
       <div className="messages-area">
         {loading && (
-          <p style={{ textAlign: 'center', color: 'var(--text2)', fontSize: '0.85rem' }}>
+          <p
+            style={{
+              textAlign: "center",
+              color: "var(--text2)",
+              fontSize: "0.85rem",
+            }}
+          >
             Loading messages...
           </p>
         )}
@@ -95,10 +113,14 @@ const ChatWindow = ({ selectedUser }) => {
           type="text"
           placeholder={`Message ${selectedUser.username}...`}
           value={newMsg}
-          onChange={e => setNewMsg(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && handleSend()}
+          onChange={(e) => setNewMsg(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleSend()}
         />
-        <button className="send-btn" onClick={handleSend} disabled={!newMsg.trim()}>
+        <button
+          className="send-btn"
+          onClick={handleSend}
+          disabled={!newMsg.trim()}
+        >
           ➤
         </button>
       </div>

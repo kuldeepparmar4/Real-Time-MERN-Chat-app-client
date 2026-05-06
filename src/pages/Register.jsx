@@ -1,28 +1,36 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { useAuth } from '../context/AuthContext';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useAuth } from "../context/AuthContext";
 
 const Register = () => {
-  const [username, setUsername] = useState('');
-  const [email, setEmail]       = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError]       = useState('');
-  const [loading, setLoading]   = useState(false);
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const { login } = useAuth();
-  const navigate  = useNavigate();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    if (password.length < 6) { setError('Password must be at least 6 characters'); return; }
+    setError("");
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
     setLoading(true);
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/register', { username, email, password });
+      const res = await axios.post(
+        "https://real-time-mern-chat-app-server.onrender.com/api/auth/register",
+        { username, email, password },
+      );
       login(res.data);
-      navigate('/');
+      navigate("/");
     } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed. Please try again.');
+      setError(
+        err.response?.data?.message || "Registration failed. Please try again.",
+      );
     } finally {
       setLoading(false);
     }
@@ -31,14 +39,15 @@ const Register = () => {
   return (
     <div className="auth-page">
       <div className="auth-box">
-
         <div className="auth-logo">
           <div className="auth-logo-icon">💬</div>
           <span className="auth-logo-text">ChatFlow</span>
         </div>
 
         <h2>Create account</h2>
-        <p className="auth-subtitle">Join thousands of people already chatting.</p>
+        <p className="auth-subtitle">
+          Join thousands of people already chatting.
+        </p>
 
         {error && <p className="error-msg">{error}</p>}
 
@@ -49,7 +58,7 @@ const Register = () => {
               type="text"
               placeholder="cooluser123"
               value={username}
-              onChange={e => setUsername(e.target.value)}
+              onChange={(e) => setUsername(e.target.value)}
               required
             />
           </div>
@@ -60,7 +69,7 @@ const Register = () => {
               type="email"
               placeholder="you@example.com"
               value={email}
-              onChange={e => setEmail(e.target.value)}
+              onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
@@ -71,13 +80,13 @@ const Register = () => {
               type="password"
               placeholder="Min. 6 characters"
               value={password}
-              onChange={e => setPassword(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
               required
             />
           </div>
 
           <button type="submit" disabled={loading}>
-            {loading ? 'Creating account...' : 'Get started →'}
+            {loading ? "Creating account..." : "Get started →"}
           </button>
         </form>
 
